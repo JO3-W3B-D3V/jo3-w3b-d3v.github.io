@@ -1,3 +1,12 @@
+/**
+ * @todo I need to clean up this code, BIG TIME, I also need to look at 
+ *       making the entire application work as quickly as possible, with 
+ *       as little complexity as possible. 
+ * @todo I also need to look at testing and debugging any potential issue(s)
+ *       there may be within this code.
+ */
+
+
 // ---------------------------------------------------------------------------------------------------------------
 // UTILS 
 // ---------------------------------------------------------------------------------------------------------------
@@ -18,9 +27,7 @@ var addEvent = function (obj, event, callback) {
 };
 
 var ready = function (fnc) {
-	setTimeout(function () {
-		addEvent(document, "DOMContentLoaded", function () { fnc(); });
-	}, 10);
+	addEvent(document, "DOMContentLoaded", function () { fnc(); });
 };
 
 var $e = function (queryString) {
@@ -69,20 +76,10 @@ ready (function () {
 		var url = window.location.href;
 		var urlPath = url.split("/");
 		var pagename = urlPath[urlPath.length - 1].toLowerCase();
-		var URI = "";
 		
+		if (urlPath.indexOf("#") >= 0) pagename = window.location.hash.replace(new RegExp("#", "g"), "");
+		else  pagename = pagename.substring(0, pagename.indexOf("."));
 		
-		try { URI = window.localStorage.getItem("visited"); } 
-		catch (Exception) { /* Don't worry about it then?! :) */ }
-		
-		
-		if (isEmptyOrNull(URI)) {
-			try { pagename = window.localStorage.getItem("visited"); } 
-			catch (Exception) { /* Don't worry about it then?! :) */ }
-		} else {				
-			if (urlPath.indexOf("#") >= 0) pagename = window.location.hash.replace(new RegExp("#", "g"), "");
-			else  pagename = pagename.substring(0, pagename.indexOf("."));
-		}
 		
 		console.log(pagename);
 		
