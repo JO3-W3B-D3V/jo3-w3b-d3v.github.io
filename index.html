@@ -11,27 +11,49 @@
 					"<p>Hey! My name is Joe and I am a web developer.</p>");
 	</script>
 	
+	
+	<script type="application/ninja" name="bug" output="body">
+		render.add("<h1>Ooops!</h1>" + 
+					"<p>Did you mess up or did I?</p>");
+	</script>
+	
 	<script type="text/javascript">
 		
 		var url = window.location.href;
 		var urlPath = url.split("/");
 		var pagename = urlPath[urlPath.length - 1].toLowerCase();
+		var errors;
 		
-		var ninja = new Ninja();
-		
-		if (pagename == "home" || pagename == "index" || pagename == "" || pagename == "index.html") {		
-			ninja.setData("home", {});
-			ninja.render("home");
-		} else if (pagename == "about") {
-			
-		} else if (pagename == "") {
-			
-		} else {
-			
+		try {
+			errors = window.localStorage.getItem("errors");
+		} catch (Exception) {
+			errors = null;
 		}
 		
+		ninja.setData("home", {});
+		ninja.setData("bug", {});
 		
-		console.log(ninja);
+		
+		var ninja = new Ninja();
+		if (errors == null || errors == "") {
+			if (pagename == "home" || pagename == "index" || pagename == "" || pagename == "index.html") {		
+				ninja.render("home");
+			} else if (pagename == "about") {
+				
+			} else if (pagename == "") {
+				
+			} else {
+				ninja.render("bug");
+			}
+		} else {
+			ninja.render("bug");
+		}
+		
+		try {
+			window.localStorage.setItem("errors", "");
+		} catch (Exception) {
+			/* Don't worry about it then?! :) */
+		}
 	</script>
 	</body>
 </html>
