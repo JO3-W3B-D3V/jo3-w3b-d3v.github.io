@@ -27,10 +27,6 @@ var $e = function (queryString) {
 	return  Array.prototype.slice.call(document.querySelectorAll(queryString));
 };
 
-var isEmptyOrNull = function (str) {
-	return str == "" || str == null;
-};
-
 
 
 
@@ -50,6 +46,12 @@ ready (function () {
 	
 	try { targetURL = window.localStorage.getItem("visited"); } 
 	catch (Exception) { targetURL = ""; }
+	
+	
+	
+	var isEmptyOrNull = function (str) {
+		return str == "" || str == null;
+	};
 	
 	
 	// ---------------------------------------------------------------------------------------------------------------
@@ -82,14 +84,17 @@ ready (function () {
 			else  pagename = pagename.substring(0, pagename.indexOf("."));
 		}
 		
+		console.log(pagename);
 		
 		if (pagename == "home" || pagename == "index" || pagename == "") {		
 			ninja.setData("home", {});
 			ninja.render("home");
-		} else if (pagename == "about") {
-			
-		} else if (pagename == "") {
-			
+		} else if (pagename == "about") { // TODO
+			ninja.setData("home", {});
+			ninja.render("home");
+		} else if (pagename == "") { // TODO
+			ninja.setData("home", {});
+			ninja.render("home");
 		} else { 
 			errorPage(); 
 		}
