@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="Ninja.js"></script>
+		<title>JO3-W3B-D3V</title>
+	</head>
+	<body>
+	
+	<script type="application/ninja" name="home" output="body">
+		render.add("<h1>#HELLO-WORLD { developer: 100% !important; }</h1>" + 
+					"<p>Hey! My name is Joe and I am a web developer.</p>");
+	</script>
+	
+	<script type="text/javascript">
+		
+		var url = window.location.href;
+		var urlPath = url.split("/");
+		var pagename = urlPath[urlPath.length - 1].toLowerCase();
+		
+		var ninja = new Ninja();
+		
+		if (pagename == "home" || pagename == "index" || pagename == "" || pagename == "index.html") {		
+			ninja.setData("home", {});
+			ninja.render("home");
+		} else if (pagename == "about") {
+			
+		} else if (pagename == "") {
+			
+		} else {
+			
+		}
+		
+		
+		console.log(ninja);
+	</script>
+	</body>
+</html>
