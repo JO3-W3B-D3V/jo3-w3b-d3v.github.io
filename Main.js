@@ -27,6 +27,10 @@ var $e = function (queryString) {
 	return  Array.prototype.slice.call(document.querySelectorAll(queryString));
 };
 
+var isEmptyOrNull = function (str) {
+	return str == "" || str == null;
+};
+
 
 
 
@@ -46,12 +50,6 @@ ready (function () {
 	
 	try { targetURL = window.localStorage.getItem("visited"); } 
 	catch (Exception) { targetURL = ""; }
-	
-	
-	
-	var isEmptyOrNull (str) {
-		return str == "" || str == null;
-	};
 	
 	
 	// ---------------------------------------------------------------------------------------------------------------
