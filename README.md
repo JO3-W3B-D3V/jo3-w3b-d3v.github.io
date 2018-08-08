@@ -15,4 +15,4 @@ I also plan to use **very** little css, the css that will be used on this web ap
 
 
 # Demo
-(This is the current link to the app that I'm currently working on)[https://jo3-w3b-d3v.github.io/]
+[This is the current link to the app that I'm currently working on](https://jo3-w3b-d3v.github.io/)
