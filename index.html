@@ -30,22 +30,25 @@
 			errors = null;
 		}
 		
-		ninja.setData("home", {});
-		ninja.setData("bug", {});
-		
-		
 		var ninja = new Ninja();
 		if (errors == null || errors == "") {
 			if (pagename == "home" || pagename == "index" || pagename == "" || pagename == "index.html") {		
+			ninja.setData("home", {});
 				ninja.render("home");
-			} else if (pagename == "about") {
+			} 
+			
+			else if (pagename == "about") {
 				
-			} else if (pagename == "") {
+			} 
+			
+			else if (pagename == "") {
 				
 			} else {
+				ninja.setData("bug", {});
 				ninja.render("bug");
 			}
 		} else {
+			ninja.setData("bug", {});
 			ninja.render("bug");
 		}
 		
