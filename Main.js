@@ -97,6 +97,31 @@ ready (function () {
 		}
 	};
 	
+	var nagivation = $e("nav a");
+	console.log(nagivation);
+	addEvent(nagivation, "click", function (e) {
+		try {
+			e = e || window.event;
+			e.preventDefault();
+		} catch (Exception) {
+			/* don't worry about it... */
+		}
+		
+		var link = this.getAttribute("href").split("/");
+		var targetURI = link[link.length - 1];
+		console.log(targetURI);
+		
+		router.navigate(null, null, targetURI);
+		
+		if (ninja.getData(targetURI) == null) {
+			ninja.setData(targetURI, {});
+		}
+		
+		ninja.render(targetURI);
+		
+		return false;
+	});
+	
 	
 	
 	// ---------------------------------------------------------------------------------------------------------------
