@@ -1,30 +1,48 @@
 /**
  * @author      Joseph Evans <joeevs196@gmail.com>
  * @since       03/08/2018
- * @version     0.0.1
+ * @version     2.0.4
  * @file        The purpose behind this javascript file is to implement a highly
  *              minimal rendering engine which can be run within the web browser.
  *              Due to the preprocessing abilities, you can have JSX like syntax
  *              within your ninja templates. I believe that many React developers
  *              may actually quite like that!
- * @copyright (c) 2018 copyright holder all Rights Reserved.
- *            Permission is hereby granted, free of charge, to any person obtaining a copy
- *            of this software and associated documentation files (the "Software"), to deal
- *            in the Software without restriction, including without limitation the rights
- *            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *            copies of the Software, and to permit persons to whom the Software is
- *            furnished to do so, subject to the following conditions:
+ * @copyright   (c) 2018 copyright holder all Rights Reserved.
+ *              Permission is hereby granted, free of charge, to any person obtaining a copy
+ *              of this software and associated documentation files (the "Software"), to deal
+ *              in the Software without restriction, including without limitation the rights
+ *              to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *              copies of the Software, and to permit persons to whom the Software is
+ *              furnished to do so, subject to the following conditions:
  *
- *            The above copyright notice and this permission notice shall be included in all
- *            copies or substantial portions of the Software.
+ *              The above copyright notice and this permission notice shall be included in all
+ *              copies or substantial portions of the Software.
  *
- *            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *            IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *            FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *            AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *            LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *            OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *            SOFTWARE.
+ *              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *              IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *              FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *              LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *              OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *              SOFTWARE.
+ * @see         The render method below was NOT of my own work, I've simply taken code that can be
+ *              found here (http://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line)
+ *              I've simply plugged the same/similar code in with my own. Therefor I cannot take
+ *              credit of how the rendering is actually executed in any way shape or form.
+ *
+ * @update      The purpose of this file is to allow for simple to do rendering, with Ninja.v2.js
+ *              the core function that is responsible for rendering any DHTML is done using code from
+ *              the url above. This means that there's more support for JSX-like syntax which as we all
+ *              know, many front end developers love, as it's a blend of both JavaScript and HTML.
+ *              In turn with the modification, this also means that there's a fair bit less source code,
+ *              so UNLIKE most updates where code and features are added, this update has effectively
+ *              removed code, and 'changed' the functionality & features behind this template engine.
+ *
+ * @update      Included the ability to parse another template into another one.
+ *
+ * @update      Included a render async method, this will simply take advantage of set timeout.
+ *
+ * @update      Included a lot more documentation & debugging tool(s).
  */
 
 
@@ -44,7 +62,13 @@
  * that such as storing the current state of the situation, the Ninja only does as commanded.
  */
 
-
+/**
+ * @global
+ * @class  Ninja
+ * @desc   Ninja is a mighty warrior that will provide a service that allows
+ *         for very fast, accurate and simple methods for rendering your DHTML.
+ *
+ */
 function Ninja () {
   if (Ninja.Sensai != null){
     return Ninja.Sensai;
@@ -58,6 +82,32 @@ function Ninja () {
    */
   var ninjas = {};
 
+  /**
+   * @private
+   * This allows Ninja to see his errors, his past mistakes, this allows Ninja to
+   * learn and become better warrior.
+   */
+  var debug = false;
+
+  /**
+   * @private
+   * @function ninjaLog
+   * @param    {Error} error
+   * @desc     This allows Ninja to study his mistakes, his ways of error(s).
+   */
+  var ninjaLog  = function (error) {
+    if (debug) {
+      try {
+        console.log('\n===================');
+        console.log('=== NINJA ERROR ===');
+        console.log(error);
+        console.log('=== NINJA ERROR ===');
+        console.log('===================\n');
+      } catch (NoAccessToConsole) {
+        // There is nothing more that cna be done ninja.
+      }
+    }
+  };
 
   /**
    * @private
@@ -95,46 +145,36 @@ function Ninja () {
 
   /**
    * @private
-   * You see Ninja, one of the most important things you can do is to plan ahead.
+   * @function samurai
+   * @param    {String}   html
+   * @param    {*}        data
+   * @return   {Function}
+   * @desc     You see Ninja, even you will need the help of a samurai
+   *           from time to time as it is a well known fact that the samurai
+   *           are strong and mighty warriors.
    */
-  var preProcess = function (str) {
-    if (typeof str != "string") {
-      throw new Error("The Sensai will not be happy with this ninja." +
-        "\nThere is only a certian format in which is accepted, the provided data " +
-        "was not the correct format.\n\nThis method accepts a sting and nothign else.");
+  var samurai = function (html, data) {
+    var templates = /<%([^%>]+)?%>/g;
+    var operations = /(^( )?(if|for|else|switch|case|break|var|try|catch|finally|console|self|{|}|;|:|[|]))(.*)?/g,
+      code = 'var r=[];\nvar katana = this;\nvar self = new Ninja();\n',
+      cursor = 0,
+      match;
+
+    var add = function(line, js) {
+      js  ? (code += line.match(operations)
+        ? line + '\n' : 'r.push(' + line + ');\n') :
+        (code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+      return add;
     }
 
-    var preRender = "";
-    var lines = str.split("\n");
-    var renderRegularExpression = /\(([^);]+)\)/;
-    var dhtmlRegularExpression = /{([^}}]+)}}/g;
-
-    for (var i = 0, s = lines.length; i < s; i ++) {
-      var line = lines[i];
-      var target;
-      try { target = line.match(renderRegularExpression)[1] }
-      catch (Exception) { /* Do nothing Ninja, do not worry, this was a minor mistake */  }
-
-      if (target != null && line.indexOf("render") >= 0) {
-          var startOutputString = "render.add('";
-          var endOutputString = "');";
-          var outputLine = "";
-
-          if (line.indexOf("{{") >= 0 && line.indexOf("}}") >= 0) {
-            var dhtml = target.match(dhtmlRegularExpression)[0];
-            var variableName = dhtml.replace(new RegExp("{", "g"), "")
-                                    .replace(new RegExp("}", "g"), "");
-            var startOfDHTML = target.substring(0, target.indexOf(dhtml));
-            var endOfDHTML = target.substring(target.indexOf(dhtml) + dhtml.length, target.length);
-             outputLine = startOutputString + startOfDHTML + "' + " + variableName + " + '" + endOfDHTML + endOutputString;
-         } else {
-            outputLine = startOutputString + target + endOutputString;
-		 }
-         str = str.replace(line, outputLine);
-      }
+    while (match = templates.exec(html)) {
+      add(html.slice(cursor, match.index))(match[1], true);
+      cursor = match.index + match[0].length;
     }
 
-    return str;
+    add(html.substr(cursor, html.length - cursor));
+    code += 'return r.join("");';
+    return new Function(code.replace(/[\r\t\n]/g, '')).apply(data);
   };
 
 
@@ -146,55 +186,149 @@ function Ninja () {
    * important information.
    */
   var publicProperties = {
+
+    /**
+     * @public
+     * @function getTemplate
+     * @param    {String} name
+     * @return   {*}
+     * @desc     The purpose of this method is to allow Ninja to simply reflect and view
+     *           himself.
+     */
     getTemplate: function (name) {
-     return ninjas[name];
+      try {
+        return ninjas[name];
+      } catch (SomeError) {
+        ninjaLog(SomeError);
+      }
     },
 
+    /**
+     * @public
+     * @function getData
+     * @param    {String} name
+     * @return   {*}
+     * @desc     The purpose of this method allows Ninja to see what data
+     *           has been assigned to which target.
+     */
     getData: function (name) {
-      if (ninjas[name] != null) {
-        return ninjas[name].data;
+      try {
+        if (ninjas[name] != null) {
+          return ninjas[name].data;
+        }
+      } catch (SomeError) {
+        ninjaLog(SomeError);
       }
     },
 
+    /**
+     * @public
+     * @function getOutPut
+     * @param    {String} name
+     * @return   {*}
+     * @desc     The purpose of this method is to allow Ninja to review what he
+     *           has done.
+     */
     getOutPut : function (name) {
-      if (ninjas[name] != null) {
-        return ninjas[name].output;
+      try {
+        if (ninjas[name] != null) {
+          return ninjas[name].output;
+        }
+      } catch (SomeError) {
+        ninjaLog(SomeError);
       }
     },
 
+    /**
+     * @public
+     * @function setData
+     * @param    {String} name
+     * @param    {*}      data
+     * @desc      The purpose of this method is to simply allow Ninja to set the data
+     *            that is assigned to his given target.
+     */
     setData: function (name, data) {
-      ninjas[name].data = data;
+      try {
+        ninjas[name].data = data;
+      } catch (NoSuchPropertyExists) {
+        ninjaLog(NoSuchPropertyExists);
+      }
     },
 
+    /**
+     * @public
+     * @function setOutput
+     * @param    {String} name
+     * @param    {*}      output
+     * @desc     The purpose of this method is to simply allow Ninja to set the
+     */
     setOutput: function (name, output) {
-      ninjas[name].output = output;
+      try {
+        ninjas[name].output = output;
+      } catch (NoSuchPropertyExists) {
+        ninjaLog(NoSuchPropertyExists);
+      }
     },
 
+    /**
+     * @public
+     * @function setTemplate
+     * @param    {String} name
+     * @param    {*}      template
+     * @desc     The purpose of this method is to simply allow Ninja
+     *           to create a new target.
+     */
     setTemplate: function (name, template) {
-      ninjas[name] = template;
+      try {
+        ninjas[name] = template;
+      } catch (NoSuchPropertyExists) {
+        ninjaLog(NoSuchPropertyExists);
+      }
     },
 
+    /**
+     * @public
+     * @param  {String} xml
+     * @param  {*}      data
+     * @desc   This will allow Ninja to simply execute his given task without
+     *         having to provide the result(s) instantly.
+     */
+    parse: function (xml, data) {
+      try {
+        return samurai(xml, data);
+      } catch (SomeError) {
+        ninjaLog(SomeError);
+      }
+    },
+
+    /**
+     * @public
+     * @function renderAsync
+     * @param    {String}   name
+     * @param    {Function} fnc
+     * @desc     This is where Ninja will attempt to provide some results
+     *           without preventing fellow warriors from doing their job.
+     */
+    renderAsync: function (name, fnc) {
+      setTimeout(function() {
+        publicProperties.render(name, fnc);
+      }, 0);
+    },
+
+    /**
+     * @public
+     * @function render
+     * @param    {String}   name
+     * @param    {Function} fnc
+     * @desc     This is where Ninja must prove himself, Ninja must
+     *           provide some results.
+     * @see      http://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
+     */
     render: function (name, fnc) {
       var ninja = ninjas[name];
       if (ninja != null) {
         if (ninja.data != null) {
-
-          var samurai = function () {
-            var katana  = ninja.data;
-            var render = {value: '', add: function (x) { render.value += x; }};
-            var preProcessed = ninja.template.innerHTML;
-            try { preProcessed = preProcess(ninja.template.innerHTML); }
-            catch (Exception) { /* Do nothing Ninja, do not worry, this was a minor mistake */ }
-            var jujutsu =
-            "render.compile = function () { \n " +
-              "\n" + preProcessed +
-              "\n return render.value;\n" +
-            "};";
-            eval(jujutsu);
-            render.compile();
-            return render.value;
-          };
-          ninja.output.innerHTML = samurai();
+          ninja.output.innerHTML = samurai(ninja.template.innerHTML, ninja.data);
           if (typeof fnc == "function") {
             fnc();
           } else if (fnc != null) {
@@ -205,6 +339,16 @@ function Ninja () {
           }
         }
       }
+    },
+
+    /**
+     * @public
+     * @function toggleErrorLog
+     * @desc     This method will allow Ninja to see whether or not
+     *           he would like to see the ways of his own mistakes.
+     */
+    toggleErrorLog: function () {
+      debug = !debug;
     }
   };
 
