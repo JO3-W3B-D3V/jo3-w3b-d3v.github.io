@@ -31,30 +31,29 @@
 	</footer>
 	<!-- home page -->
 	<script type="application/ninja" name="home" output="#content">
-		render.add("<h1>#HELLO-WORLD { developer: 100% !important; }</h1>" + 
-					"<p>Hey! My name is Joe and I am a web developer.</p>");
+		<h1>#HELLO-WORLD { developer: 100% !important; }</h1> 
+		<p>Hey! My name is Joe and I am a web developer.</p>
 	</script>
 	
 	
 	<!-- about page -->
 	<script type="application/ninja" name="about" output="#content">
-		render.add("<h2>This guy..</h2>" +
-			"<p>So, as you should already know, my name is Joe, and I'm a web developer." + 
-				"I tend to specialise in writing restful web applications, and I tend to focus on" +
-				" developing a shed log of JavaScript technologies whenever I get the chance to." +
-			"</p>"
-		);
+		<h2>This guy..</h2>
+		<p>So, as you should already know, my name is Joe, and I'm a web developer.
+				I tend to specialise in writing restful web applications, and I tend to focus on
+				 developing a shed log of JavaScript technologies whenever I get the chance to.
+			</p>
 	</script>
 	
 	<!-- contact page -->
 	<script type="application/ninja" name="contact" output="#content">
-		render.add("Coming soon...");
+		<p>Coming soon...</p>
 	</script>
 	
 	<!-- error page -->
 	<script type="application/ninja" name="bug" output="#content">
-		render.add("<h1>Ooops!</h1>" + 
-					"<p>Did you mess up or did I?</p>");
+		<h1>Ooops!</h1> 
+		<p>Did you mess up or did I?</p>
 	</script>
 	
 	<footer>
