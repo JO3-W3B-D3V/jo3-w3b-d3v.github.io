@@ -73,6 +73,7 @@ ready (function () {
 	
 	
 	var applyRouting = function (e) {
+		var start = new Date();
 		var url = window.location.href;
 		var urlPath = url.split("/");
 		var pagename = urlPath[urlPath.length - 1].toLowerCase();
@@ -95,6 +96,12 @@ ready (function () {
 		} else { 
 			errorPage(); 
 		}
+		
+		var end = new Date();
+		var timeTaken = (start.getTime() - end.getTime()) / 1000;
+		var cleanSeconds = Math.abs(timeTaken);
+		console.log(cleanSeconds);
+		document.getElementById("timer").innerHTML = cleanSeconds;
 	};
 	
 	var nagivation = $e("nav a");
