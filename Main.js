@@ -73,7 +73,6 @@ ready (function () {
 	
 	
 	var applyRouting = function (e) {
-		var start = new Date();
 		var url = window.location.href;
 		var urlPath = url.split("/");
 		var pagename = urlPath[urlPath.length - 1].toLowerCase();
@@ -97,16 +96,14 @@ ready (function () {
 			errorPage(); 
 		}
 		
-		var end = new Date();
-		var timeTaken = (start.getTime() - end.getTime()) / 1000;
-		var cleanSeconds = Math.abs(timeTaken);
-		console.log(cleanSeconds);
-		document.getElementById("timer").innerHTML = cleanSeconds;
+		
 	};
 	
 	var nagivation = $e("nav a");
 	console.log(nagivation);
 	addEvent(nagivation, "click", function (e) {
+		var start = new Date();
+		
 		try {
 			e = e || window.event;
 			e.preventDefault();
@@ -125,6 +122,12 @@ ready (function () {
 		}
 		
 		ninja.render(targetURI);
+		
+		var end = new Date();
+		var timeTaken = (start.getTime() - end.getTime()) / 1000;
+		var cleanSeconds = Math.abs(timeTaken);
+		console.log(cleanSeconds);
+		document.getElementById("timer").innerHTML = cleanSeconds;
 		
 		return false;
 	});
